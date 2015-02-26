@@ -1,0 +1,12 @@
+<span style="margin-right: 5px;"><%= data.label %></span><i class="fa fa-long-arrow-down hidden"></i><i class="fa fa-long-arrow-up hidden"></i>
+    <div class="dropdown sq-sort-dropdown-button <% if(!data.sortable){ %> hidden <% } %>" >
+        <i class="fa fa-caret-down dropdown-toggle" data-toggle="dropdown" aria-expanded="true"></i>
+        <ul class="dropdown-menu" role="menu">
+            <li data-sq-sort-type="asc" role="presentation"><a role="menuitem" tabindex="-1"
+                href="#">Sort Ascending</a></li>
+            <li data-sq-sort-type="desc" role="presentation"><a role="menuitem" tabindex="-1"
+                href="#">Sort Descending</a></li>
+            <li data-sq-sort-type="clear" role="presentation"><a role="menuitem" tabindex="-1"
+                href="#">Clear Sort</a></li>
+        </ul>
+    </div>

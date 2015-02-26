@@ -1,0 +1,23 @@
+.sq-paginator .pagination, .sq-paginator form{
+    vertical-align: middle;
+}
+
+.sq-paginator form{
+	display: inline-block;
+}
+
+.sq-paginator .sq-current-page{
+   width: 42px;
+   margin-left: 10px;
+   margin-right: 4px;
+   text-align: right;
+}
+
+.sq-page-count{
+	margin-left: 3px;
+	margin-right: 5px;
+}
+
+.sq-go-to{
+	margin-left: 5px;
+}

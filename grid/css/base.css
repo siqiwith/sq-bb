@@ -1,0 +1,12 @@
+.sq-sort-dropdown-button{
+    display: inline-block;
+    cursor: pointer;
+}
+
+.sq-grid .sq-row-selected{
+	background-color: #d9edf7 !important;
+}
+
+.sq-grid-row:hover{
+	cursor: pointer;
+}
