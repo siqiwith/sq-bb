@@ -90,6 +90,8 @@ define([
 						t.rowViews.push(gridRowView);
 						t.$("tbody").append(gridRowView.render(t.columnsStructure).$el);
 					});
+					
+					t.trigger("onRedraw");
 				});
 			}else{
 				t.listenTo(t.collection, "sort", function(collection, options){

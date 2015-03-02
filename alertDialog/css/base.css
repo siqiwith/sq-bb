@@ -1,0 +1,24 @@
+.sq-alert-dialog .modal-title .fa-check-circle, .sq-alert-dialog .modal-title .fa-exclamation-triangle,
+.sq-alert-dialog .modal-title .fa-times-circle, .sq-alert-dialog .modal-title .fa-info-circle{
+	color: inherit;
+}
+
+.sq-alert-dialog .fa-check-circle{
+	color: #5cb85c;
+}
+
+.sq-alert-dialog .fa-exclamation-triangle{
+    color: #f0ad4e;
+}
+
+.sq-alert-dialog .fa-times-circle{
+    color: #d9534f
+}
+
+.sq-alert-dialog .fa-info-circle{
+    color: #5bc0de;
+}
+
+.sq-alert-dialog .modal-body i{
+	margin-right: 5px;
+}

@@ -105,6 +105,9 @@ define([
 			
 			// Re-render
 			t.update();
+			t.trigger("onGoToPage", {
+				pageNumber: t.currentPage
+			});
 		},
 		
 		clickGoButton: function(e){
@@ -114,6 +117,9 @@ define([
 			
 			// Re-render
 			t.update();
+			t.trigger("onGoToPage", {
+				pageNumber: t.currentPage
+			});
 		},
 		
 		validateInput: function(e){

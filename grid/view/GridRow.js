@@ -46,6 +46,28 @@ define([
 			}else{
 				t.$el.toggleClass("sq-row-selected", false);
 			}
+			
+			
+			t.listenTo(t.model, "change", function(model, options){
+				console.log(arguments);
+				var rowData = t.model.toJSON();
+				
+				for(var i = 0; i < columnsStructure.length; i++){
+					var ci = columnsStructure[i];
+					if(ci.formatter){
+						rowData[ci.name] = ci.formatter(rowData[ci.name], t.model);
+					}
+				}
+				
+				
+				t.$el.html(t.contentTemplate(rowData));
+				if(this.model.get("selected")){
+					t.$el.toggleClass("sq-row-selected", true);
+				}else{
+					t.$el.toggleClass("sq-row-selected", false);
+				}
+			});
+			
 			return this;
 		},
 		

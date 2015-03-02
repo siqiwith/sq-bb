@@ -1,0 +1,19 @@
+<!-- <div class="modal fade"> -->
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close hidden" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title"><i class="fa button fa <% if(data.type == 'success'){ %>fa-check-circle<% } else if(data.type == 'warning'){ %>fa-exclamation-triangle<% } else if(data.type == 'error'){ %>fa-times-circle<% }else{ %>fa-info-circle<% } %>"></i>
+        <% if(data.title){ %><%= data.title %><% } else if(data.type == 'success'){ %>Success<% } else if(data.type == 'warning'){ %>Warning<% } else if(data.type == 'error'){ %>Error<% }else{ %>Information<% } %></h4>
+      </div>
+      <div class="modal-body">
+        <p><i class="fa fa <% if(data.type == 'success'){ %>fa-check-circle<% } else if(data.type == 'warning'){ %>fa-exclamation-triangle<% } else if(data.type == 'error'){ %>fa-times-circle<% }else{ %>fa-info-circle<% } %>"></i><%= data.text %></p>
+        <% if(data.description){ %><p><%= data.description %></p><% } %>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+        <button type="button" class="btn btn-primary hidden">Confirm</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+<!-- </div> /.modal -->
