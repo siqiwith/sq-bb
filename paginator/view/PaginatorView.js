@@ -27,7 +27,18 @@ define([
 		
 		initialize: function(params){
 			var t = this;
-//			t.currentPage = params["currentPage"];
+			if(params["pageCount"]){
+				t.pageCount = params["pageCount"];
+			}
+			if(params["currentPage"]){
+				t.currentPage = params["currentPage"];
+			}
+			if(params["pageSize"]){
+				t.pageSize = params["pageSize"];
+			}
+			if(params["pageButtonCount"]){
+				t.pageButtonCount = params["pageButtonCount"];
+			}
 		},
 		
 //		remove: function(){
