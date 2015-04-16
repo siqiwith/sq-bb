@@ -25,6 +25,7 @@ define([
 			t.columnsStructure = params["columnsStructure"];
 			t.collection = params["collection"];
 			t.serverSideSort = params["serverSideSort"];
+			t.indirectSort = params["indirectSort"];
 			
 			t._columnsInfoMap = {};
 			var rowContentTplStr = "";
@@ -94,8 +95,9 @@ define([
 					t.trigger("onRedraw");
 				});
 			}else{
+				// TODO: Check what event should be bind to if serverSideSort = false
 				t.listenTo(t.collection, "sort", function(collection, options){
-					console.log();
+					console.log("sort");
 					while(t.rowViews.length > 0){
 						var rv = t.rowViews.pop();
 						rv.remove();
@@ -113,6 +115,7 @@ define([
 				});
 			}
 			t.listenTo(t.collection, "remove", function(model, collection, options){
+				console.log("remove");
 				for(var i = 0; i < t.rowViews.length; i++){
 					if(t.rowViews[i].model == model){
 						t.rowViews.splice(i,1)
@@ -122,11 +125,11 @@ define([
 			});
 			
 			t.listenTo(t.collection, "change", function(model, options){
-				console.log();
+				console.log("change");
 			});
 			
 			t.listenTo(t.collection, "reset", function(model, options){
-				console.log();
+				console.log("reset");
 			});
 			 
 			return this;
