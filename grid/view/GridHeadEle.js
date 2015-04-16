@@ -70,10 +70,22 @@ define([
 			var ct = e.currentTarget;
 			
 			var name = t.model.get("name");
+			var pn = $(ct).parent().parent();
 			
-			if(t._currentSortType == "ascending"){
-				t.$(".fa-caret-up").toggleClass("hidden", true);
-				t.$(".fa-caret-down").toggleClass("hidden", true);
+			
+			var currentSortType = null;
+			if(!t.$(".fa-caret-up").hasClass("hidden")){
+				currentSortType = "ascending"
+			}else if(!t.$(".fa-caret-down").hasClass("hidden")){
+				currentSortType = "descending"
+			}
+			
+			
+			if(currentSortType == "ascending"){
+				$(".fa-caret-up", pn).toggleClass("hidden", true);
+				$(".fa-caret-down", pn).toggleClass("hidden", true);
+				//t.$(".fa-caret-up").toggleClass("hidden", true);
+				//t.$(".fa-caret-down").toggleClass("hidden", true);
 				if(t.gridView.serverSideSort){
 					t.gridView.trigger("onServerSideSort", {
 						sortBy: name,
@@ -84,8 +96,9 @@ define([
 					// TODO: Clear sort is not working when serverSideSort = false 
 					t.gridView.collection.sort();
 				}
-				t._currentSortType = null;
-			}else if(t._currentSortType == "descending"){
+			}else if(currentSortType == "descending"){
+				$(".fa-caret-up", pn).toggleClass("hidden", true);
+				$(".fa-caret-down", pn).toggleClass("hidden", true);
 				t.$(".fa-caret-up").toggleClass("hidden", false);
 				t.$(".fa-caret-down").toggleClass("hidden", true);
 				if(t.gridView.serverSideSort){
@@ -97,8 +110,9 @@ define([
 					t.gridView.collection.comparator = t.ascComparator;
 					t.gridView.collection.sort();
 				}
-				t._currentSortType = "ascending";
 			}else{
+				$(".fa-caret-up", pn).toggleClass("hidden", true);
+				$(".fa-caret-down", pn).toggleClass("hidden", true);
 				t.$(".fa-caret-up").toggleClass("hidden", true);
 				t.$(".fa-caret-down").toggleClass("hidden", false);
 				if(t.gridView.serverSideSort){
@@ -110,7 +124,6 @@ define([
 					t.gridView.collection.comparator = t.descComparator;
 					t.gridView.collection.sort();
 				}
-				t._currentSortType = "descending";
 			}
 		},
 		
