@@ -8,7 +8,7 @@ define([
 		className: 'sq-grid-row',
 		
 		events: {
-			"click": "onSelect"
+			"click": "onClick"
 		},
 		
 		template: sq_.template(tplStr, {
@@ -59,8 +59,8 @@ define([
 					}
 				}
 				
-				
 				t.$el.html(t.contentTemplate(rowData));
+				
 				if(this.model.get("selected")){
 					t.$el.toggleClass("sq-row-selected", true);
 				}else{
@@ -71,9 +71,8 @@ define([
 			return this;
 		},
 		
-		onSelect: function(){
-			this.gridView.selectRow(this);
-			this.gridView.trigger("onSelectRow", this.model);
+		onClick: function(e){
+			this.gridView.clickRow(this, e);
 		}
 	});
 })

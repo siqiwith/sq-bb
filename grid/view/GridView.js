@@ -14,6 +14,8 @@ define([
 		
 		rowViews: null,
 		
+		_selectedRows: null,
+		
 		template: sq_.template(tplStr, {
 			nlsObject: {}
 		}),
@@ -27,7 +29,9 @@ define([
 			t.serverSideSort = params["serverSideSort"];
 			t.indirectSort = params["indirectSort"];
 			t.canClearState = params["canClearState"];
+			t.multiSelect = params["multiSelect"];
 			
+			t._selectedRows = [];
 			t._columnsInfoMap = {};
 			var rowContentTplStr = "";
 			for(var i = 0; i < t.columnsStructure.length; i++){
@@ -57,7 +61,7 @@ define([
 					headEleView[i].remove();
 				}
 			}
-			
+			t._selectedRows = [];
 			Backbone.View.prototype.remove.apply(this, arguments);
 		},
 		
@@ -93,6 +97,7 @@ define([
 						t.$("tbody").append(gridRowView.render(t.columnsStructure).$el);
 					});
 					
+					t._selectedRows = [];
 					t.trigger("onRedraw");
 				});
 			}else{
@@ -113,15 +118,26 @@ define([
 						t.rowViews.push(gridRowView);
 						t.$("tbody").append(gridRowView.render(t.columnsStructure).$el);
 					});
+					
+					t._selectedRows = [];
 				});
 			}
+			
+			// TODO: Add add, remove logic
 			t.listenTo(t.collection, "remove", function(model, collection, options){
 				console.log("remove");
 				for(var i = 0; i < t.rowViews.length; i++){
 					if(t.rowViews[i].model == model){
-						t.rowViews.splice(i,1)
+						t.rowViews.splice(i,1);
+						break;
 					}
-					return;
+				}
+				
+				for(var i = 0; i < t._selectedRows.length; i++){
+					if(t._selectedRows[i].model == model){
+						t._selectedRows.splice(i,1);
+						break;
+					}
 				}
 			});
 			
@@ -172,15 +188,79 @@ define([
 			}
 		},
 		
-		selectRow: function(gridRowView){
+		getSelectedRows: function(){
+			return this._selectedRows;
+		},
+		
+		clickRow: function(gridRowView, e){
 			var t = this;
-			for(var i = 0; i < t.rowViews.length; i++){
-				if(t.rowViews[i] == gridRowView){
-					t.rowViews[i].model.set({"selected": true}, {silent: true});
-					t.rowViews[i].$el.toggleClass("sq-row-selected", true);
+			var selectedRowsCount = t._selectedRows.length;
+			if(t.multiSelect && e.ctrlKey){
+				if(gridRowView.model.get("selected")){
+					// Deselect Row
+					t._deselectSingleRow(gridRowView);
 				}else{
-					t.rowViews[i].model.set({"selected": false}, {silent: true});
-					t.rowViews[i].$el.toggleClass("sq-row-selected", false);
+					// Select Row
+					t._selectSingleRow(gridRowView);
+				}
+			}else if(t.multiSelect && selectedRowsCount > 1){
+				for(var i = 0; i < t.rowViews.length; i++){
+					if(t.rowViews[i] == gridRowView){
+						// Select Row
+						t._selectSingleRow(t.rowViews[i]);
+					}else{
+						// Deselect Row
+						t._deselectSingleRow(t.rowViews[i]);
+					}
+				}
+			}else{
+				if(gridRowView.model.get("selected")){
+					// Deselect Row
+					t._deselectSingleRow(gridRowView);
+				}else{
+					// Select Row
+					for(var i = 0; i < t.rowViews.length; i++){
+						if(t.rowViews[i] == gridRowView){
+							// Select Row
+							t._selectSingleRow(t.rowViews[i]);
+						}else{
+							// Deselect Row
+							t._deselectSingleRow(t.rowViews[i]);
+						}
+					}
+				}
+			}
+			
+			t.trigger("onClickRow");
+		},
+		
+		_selectSingleRow: function(gridRowView){
+			var t = this;
+			var needAdd= true;
+			gridRowView.model.set({"selected": true}, {silent: true});
+			gridRowView.$el.toggleClass("sq-row-selected", true);
+			
+			for(var i = 0; i < t._selectedRows.length; i++){
+				if(t._selectedRows[i].model == gridRowView.model){
+					needAdd = false;
+					break;
+				}
+			}
+			if(needAdd){
+				t._selectedRows.push(gridRowView);
+				t.trigger("onSelectRow", gridRowView.model);
+			}
+		},
+		
+		_deselectSingleRow: function(gridRowView){
+			var t = this;
+			gridRowView.model.set({"selected": false}, {silent: true});
+			gridRowView.$el.toggleClass("sq-row-selected", false);
+			for(var i = 0; i < t._selectedRows.length; i++){
+				if(t._selectedRows[i].model == gridRowView.model){
+					t._selectedRows.splice(i,1);
+					t.trigger("onDeselectRow", gridRowView.model);
+					break;
 				}
 			}
 		}
