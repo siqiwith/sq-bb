@@ -9,7 +9,7 @@ define([
 		
 		events: {
 			"click .sq-sort-dropdown-button .dropdown-menu li": "indirectSort",
-			"click .sq-grid-head-label": "sort"
+			"click": "sort"
 		},
 		
 		template: sq_.template(tplStr, {
@@ -22,7 +22,9 @@ define([
 		
 		_currentSortType: null,
 		
-		_indirectSort: false,
+		_indirectSortEnabled: false,
+		
+		_canClearState: false,
 		
 		initialize: function(params){
 			var t = this;
@@ -52,55 +54,70 @@ define([
 				}
 			};
 			
-			t._indirectSort = t.gridView.indirectSort;
-			t.model.set("indirectSort", t.gridView.indirectSort);
+			t._indirectSortEnabled = t.gridView.indirectSort ? t.gridView.indirectSort.enabled : false;
+			t._canClearState = t.gridView.canClearState;
+			t.model.set("indirectSort", t._indirectSortEnabled);
 		},
 		
 		render: function(){
 			var t = this;
-			this.$el.html(t.template(t.model.toJSON()));
-			if(!t._indirectSort){
-				t.$(".sq-grid-head-label").css({"cursor": "pointer"});
+			t.$el.html(t.template(t.model.toJSON()));
+			// indirect sort can only be set before grid is created.
+			if(!t._indirectSortEnabled){
+				t.$el.css({"cursor": "pointer"});
 			}
-			return this;
+			
+			t.listenTo(t.model, "change", function(model, options){
+				console.log(arguments);
+				t.$el.html(t.template(t.model.toJSON()));
+				// indirect sort can only be set before grid is created.
+				if(!t._indirectSortEnabled){
+					t.$el.css({"cursor": "pointer"});
+				}
+			});
+			return t;
 		},
 		
 		sort: function(e){
 			var t = this;
+			if(t._indirectSortEnabled){
+				return;
+			}
+			
 			var ct = e.currentTarget;
 			
 			var name = t.model.get("name");
 			var pn = $(ct).parent().parent();
 			
 			
-			var currentSortType = null;
-			if(!t.$(".fa-caret-up").hasClass("hidden")){
-				currentSortType = "ascending"
-			}else if(!t.$(".fa-caret-down").hasClass("hidden")){
-				currentSortType = "descending"
-			}
-			
-			
+			var currentSortType = t.model.get("sortType");
 			if(currentSortType == "ascending"){
-				$(".fa-caret-up", pn).toggleClass("hidden", true);
-				$(".fa-caret-down", pn).toggleClass("hidden", true);
-				//t.$(".fa-caret-up").toggleClass("hidden", true);
-				//t.$(".fa-caret-down").toggleClass("hidden", true);
-				if(t.gridView.serverSideSort){
-					t.gridView.trigger("onServerSideSort", {
-						sortBy: name,
-						sortType: "clear"
-					});
+				if(t._canClearState){
+					t.gridView.updateHeadSort(name, null);
+					if(t.gridView.serverSideSort){
+						t.gridView.trigger("onServerSideSort", {
+							sortBy: name,
+							sortType: "clear"
+						});
+					}else{
+						t.gridView.collection.comparator = t.defaultComparator;
+						// TODO: Clear sort is not working when serverSideSort = false 
+						t.gridView.collection.sort();
+					}
 				}else{
-					t.gridView.collection.comparator = t.defaultComparator;
-					// TODO: Clear sort is not working when serverSideSort = false 
-					t.gridView.collection.sort();
+					t.gridView.updateHeadSort(name, "descending");
+					if(t.gridView.serverSideSort){
+						t.gridView.trigger("onServerSideSort", {
+							sortBy: name,
+							sortType: "descending"
+						});
+					}else{
+						t.gridView.collection.comparator = t.descComparator;
+						t.gridView.collection.sort();
+					}
 				}
 			}else if(currentSortType == "descending"){
-				$(".fa-caret-up", pn).toggleClass("hidden", true);
-				$(".fa-caret-down", pn).toggleClass("hidden", true);
-				t.$(".fa-caret-up").toggleClass("hidden", false);
-				t.$(".fa-caret-down").toggleClass("hidden", true);
+				t.gridView.updateHeadSort(name, "ascending");
 				if(t.gridView.serverSideSort){
 					t.gridView.trigger("onServerSideSort", {
 						sortBy: name,
@@ -111,10 +128,7 @@ define([
 					t.gridView.collection.sort();
 				}
 			}else{
-				$(".fa-caret-up", pn).toggleClass("hidden", true);
-				$(".fa-caret-down", pn).toggleClass("hidden", true);
-				t.$(".fa-caret-up").toggleClass("hidden", true);
-				t.$(".fa-caret-down").toggleClass("hidden", false);
+				t.gridView.updateHeadSort(name, "descending");
 				if(t.gridView.serverSideSort){
 					t.gridView.trigger("onServerSideSort", {
 						sortBy: name,
@@ -136,10 +150,8 @@ define([
 			var pn = $(ct).parent().parent().parent();
 			var sortType = t.$(ct).attr("data-sq-sort-type");
 			
-			t.gridView.resetHeadSort();
 			if(sortType == "asc"){
-				$(".fa-long-arrow-up", pn).toggleClass("hidden", false);
-				$(".fa-long-arrow-down", pn).toggleClass("hidden", true);
+				t.gridView.updateHeadSort(name, "ascending");
 				if(t.gridView.serverSideSort){
 					t.gridView.trigger("onServerSideSort", {
 						sortBy: name,
@@ -151,8 +163,7 @@ define([
 				}
 				
 			}else if(sortType == "desc"){
-				$(".fa-long-arrow-up", pn).toggleClass("hidden", true);
-				$(".fa-long-arrow-down", pn).toggleClass("hidden", false);
+				t.gridView.updateHeadSort(name, "descending");
 				if(t.gridView.serverSideSort){
 					t.gridView.trigger("onServerSideSort", {
 						sortBy: name,
@@ -164,8 +175,7 @@ define([
 				}
 
 			}else{
-				$(".fa-long-arrow-up", pn).toggleClass("hidden", true);
-				$(".fa-long-arrow-down", pn).toggleClass("hidden", true);
+				t.gridView.updateHeadSort(name, null);
 				if(t.gridView.serverSideSort){
 					t.gridView.trigger("onServerSideSort", {
 						sortBy: name,

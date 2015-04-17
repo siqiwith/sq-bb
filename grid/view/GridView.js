@@ -26,6 +26,7 @@ define([
 			t.collection = params["collection"];
 			t.serverSideSort = params["serverSideSort"];
 			t.indirectSort = params["indirectSort"];
+			t.canClearState = params["canClearState"];
 			
 			t._columnsInfoMap = {};
 			var rowContentTplStr = "";
@@ -151,10 +152,24 @@ define([
 			}
 		},
 		
-		resetHeadSort: function(){
+//		resetHeadSort: function(){
+//			var t = this;
+//			t.$(".fa-long-arrow-up").toggleClass("hidden", true);
+//			t.$(".fa-long-arrow-down").toggleClass("hidden", true);
+//		},
+		
+		updateHeadSort: function(columnName, sortType){
 			var t = this;
-			t.$(".fa-long-arrow-up").toggleClass("hidden", true);
-			t.$(".fa-long-arrow-down").toggleClass("hidden", true);
+			for(var i = 0; i < t.headEleView.length; i++){
+				var hev = t.headEleView[i];
+				var name = hev.model.get("name");
+				var sortable = hev.model.get("sortable");
+				if(columnName == name){
+					hev.model.set("sortType", sortType);
+				}else{
+					hev.model.set("sortType", null);
+				}
+			}
 		},
 		
 		selectRow: function(gridRowView){
