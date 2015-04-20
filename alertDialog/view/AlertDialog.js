@@ -49,6 +49,15 @@ define([
 			
 		},
 		
+		loadNls: function(nls){
+			var t = this;
+			$.extend(t.nls,nls);
+			t.template = sq_.template(tplStr, {
+				nlsObject: t.nls
+			});
+			t.render();
+		},
+		
 		_update: function(data){
 			var t = this;
 			t.$el.html(this.template(data));
