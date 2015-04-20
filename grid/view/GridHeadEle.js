@@ -12,9 +12,20 @@ define([
 			"click": "sort"
 		},
 		
-		template: sq_.template(tplStr, {
-			nlsObject: {}
-		}),
+		_defaultNls: {
+			"SORT": "Sort",
+			"ASCENDING": "Ascending",
+			"DESCENDING": "Descending",
+			"SORT_ASCENDING": "Sort Ascending",
+			"SORT_DESCENDING": "Sort Descending",
+			"CLEAR_SORT": "Clear Sort"
+		},
+		
+		nls: null,
+		
+//		template: sq_.template(tplStr, {
+//			nlsObject: {}
+//		}),
 		
 		model: null,
 		
@@ -28,6 +39,16 @@ define([
 		
 		initialize: function(params){
 			var t = this;
+			if(!params){
+				params = [];
+			}
+			
+			t.nls = {};
+			$.extend(t.nls, t._defaultNls, params["nls"]);
+			t.template = sq_.template(tplStr, {
+				nlsObject: t.nls
+			});
+			
 			t.gridView = params["gridView"];
 			t.defaultComparator = t.gridView.collection.comparator;
 			t.ascComparator = function(a, b){

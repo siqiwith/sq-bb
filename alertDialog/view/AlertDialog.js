@@ -7,15 +7,35 @@ define([
 		
 		className: 'modal fade sq-alert-dialog',
 		
-		template : sq_.template(tplStr, {
-			nlsObject: {}
-		}),
+		_defaultNls: {
+			"OK": "OK",
+			"CONFIRM": "Confirm"
+		},
+		
+		nls: null,
+		
+//		template : sq_.template(tplStr, {
+//			nlsObject: {}
+//		}),
 		
 		events: {
 			"click button.btn-primary": "submit",
 			"click button.btn-default": "hide"
 		},
 		
+		
+		initialize: function(params){
+			var t = this;
+			if(!params){
+				params = [];
+			}
+			
+			t.nls = {};
+			$.extend(t.nls, t._defaultNls, params["nls"]);
+			t.template = sq_.template(tplStr, {
+				nlsObject: t.nls
+			});
+		},
 		
 		render: function() {
 			var t = this;

@@ -16,12 +16,27 @@ define([
 		
 		_selectedRows: null,
 		
-		template: sq_.template(tplStr, {
-			nlsObject: {}
-		}),
+		_defaultNls: {
+		},
+		
+		nls: null,
+		
+//		template: sq_.template(tplStr, {
+//			nlsObject: {}
+//		}),
 		
 		initialize: function(params){
 			var t = this;
+			if(!params){
+				params = [];
+			}
+			
+			t.nls = {};
+			$.extend(t.nls, t._defaultNls, params["nls"]);
+			t.template = sq_.template(tplStr, {
+				nlsObject: t.nls
+			});
+			
 			t.rowViews = [];
 			t.headEleView = [];
 			t.columnsStructure = params["columnsStructure"];

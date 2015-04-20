@@ -1,17 +1,17 @@
 <span class="sq-grid-head-label" style="margin-right: 5px;"><%= data.label %></span>
-    <i title="Sort" class="fa fa-sort <% if(!(data.sortable && !data.indirectSort && !data.sortType)){ %> hidden <% } %>"></i>
-    <i title="Ascending" class="sq-direct-sort-up fa fa-caret-up <% if(!(data.sortable && !data.indirectSort && data.sortType == "ascending")){ %>hidden<% } %>"></i>
-    <i title="Descending" class="sq-direct-sort-down fa fa-caret-down <% if(!(data.sortable && !data.indirectSort && data.sortType == "descending")){ %>hidden<% } %>"></i>
+    <i title="{{ nls.SORT }}" class="fa fa-sort <% if(!(data.sortable && !data.indirectSort && !data.sortType)){ %> hidden <% } %>"></i>
+    <i title="{{ nls.ASCENDING }}" class="sq-direct-sort-up fa fa-caret-up <% if(!(data.sortable && !data.indirectSort && data.sortType == "ascending")){ %>hidden<% } %>"></i>
+    <i title="{{ nls.DESCENDING }}" class="sq-direct-sort-down fa fa-caret-down <% if(!(data.sortable && !data.indirectSort && data.sortType == "descending")){ %>hidden<% } %>"></i>
     <i class="fa fa-long-arrow-up <% if(!(data.sortable && data.indirectSort && data.sortType == "ascending")){ %>hidden<% } %>"></i>
     <i class="fa fa-long-arrow-down <% if(!(data.sortable && data.indirectSort && data.sortType == "descending")){ %>hidden<% } %>"></i>
     <div class="dropdown sq-sort-dropdown-button <% if(!(data.sortable && data.indirectSort)){ %> hidden <% } %>" >
         <i class="fa fa-caret-down dropdown-toggle" data-toggle="dropdown" aria-expanded="true"></i>
         <ul class="dropdown-menu" role="menu">
             <li data-sq-sort-type="asc" role="presentation"><a role="menuitem" tabindex="-1"
-                href="#">Sort Ascending</a></li>
+                href="#">{{ nls.SORT_ASCENDING }}</a></li>
             <li data-sq-sort-type="desc" role="presentation"><a role="menuitem" tabindex="-1"
-                href="#">Sort Descending</a></li>
+                href="#">{{ nls.SORT_DESCENDING }}</a></li>
             <li data-sq-sort-type="clear" role="presentation"><a role="menuitem" tabindex="-1"
-                href="#">Clear Sort</a></li>
+                href="#">{{ nls.CLEAR_SORT }}</a></li>
         </ul>
     </div>

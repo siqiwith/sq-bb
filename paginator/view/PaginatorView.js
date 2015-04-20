@@ -21,12 +21,29 @@ define([
 			"change .sq-current-page": "validateInput"
 		},
 		
-		template: sq_.template(tplStr, {
-			nlsObject: {}
-		}),
+		_defaultNls: {
+			"TOTAL": "Total",
+			"GO": "Go"
+		},
+		
+		nls: null,
+		
+//		template: sq_.template(tplStr, {
+//			nlsObject: {}
+//		}),
 		
 		initialize: function(params){
 			var t = this;
+			if(!params){
+				params = [];
+			}
+			
+			t.nls = {};
+			$.extend(t.nls, t._defaultNls, params["nls"]);
+			t.template = sq_.template(tplStr, {
+				nlsObject: t.nls
+			});
+			
 			if(params["pageCount"]){
 				t.pageCount = params["pageCount"];
 			}

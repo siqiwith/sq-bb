@@ -11,15 +11,31 @@ define([
 			"click": "onClick"
 		},
 		
-		template: sq_.template(tplStr, {
-			nlsObject: {}
-		}),
+		_defaultNls: {
+		},
+		
+		nls: null,
+		
+//		template: sq_.template(tplStr, {
+//			nlsObject: {}
+//		}),
 		
 		model: null,
 		
 		initialize: function(params){
-			this.contentTemplate = params["contentTemplate"];
-			this.gridView = params["gridView"];
+			var t = this;
+			if(!params){
+				params = [];
+			}
+			
+			t.nls = {};
+			$.extend(t.nls, t._defaultNls, params["nls"]);
+			t.template = sq_.template(tplStr, {
+				nlsObject: t.nls
+			});
+			
+			t.contentTemplate = params["contentTemplate"];
+			t.gridView = params["gridView"];
 		},
 		
 		remove: function(){
