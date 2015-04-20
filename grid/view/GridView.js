@@ -17,6 +17,12 @@ define([
 		_selectedRows: null,
 		
 		_defaultNls: {
+			"SORT": "Sort",
+			"ASCENDING": "Ascending",
+			"DESCENDING": "Descending",
+			"SORT_ASCENDING": "Sort Ascending",
+			"SORT_DESCENDING": "Sort Descending",
+			"CLEAR_SORT": "Clear Sort"
 		},
 		
 		nls: null,
@@ -176,7 +182,15 @@ define([
 				var ghem = new GridHeadEleModel(ci);
 				var ghev = new GridHeadEleView({
 					model: ghem,
-					gridView: t
+					gridView: t,
+					nls: {
+						"SORT": t.nls["SORT"],
+						"ASCENDING": t.nls["ASCENDING"],
+						"DESCENDING": t.nls["DESCENDING"],
+						"SORT_ASCENDING": t.nls["SORT_ASCENDING"],
+						"SORT_DESCENDING": t.nls["SORT_DESCENDING"],
+						"CLEAR_SORT": t.nls["CLEAR_SORT"],
+					}
 				});
 				t.$("thead tr").append(ghev.render().$el);
 				t.headEleView.push(ghev);
