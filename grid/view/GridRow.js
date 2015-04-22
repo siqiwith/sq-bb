@@ -68,14 +68,37 @@ define([
 				console.log(arguments);
 				var rowData = t.model.toJSON();
 				
+				var changedAttributes = t.model.changedAttributes();
+				
 				for(var i = 0; i < columnsStructure.length; i++){
+					
 					var ci = columnsStructure[i];
-					if(ci.formatter){
-						rowData[ci.name] = ci.formatter(rowData[ci.name], t.model);
+					if(ci.forceRender || (changedAttributes && ci.name in changedAttributes)){
+						var contentString = rowData[ci.name];
+						if(ci.formatter){
+							contentString = ci.formatter(rowData[ci.name], t.model, t.$el);	
+						}
+						t.$('[data-sq-grid-col="' + ci.name + '"]').html(contentString);
+//						if(ci.postFormat){
+//							ci.postFormat(rowData[ci.name], t.model, t.$el);
+//						}
+						
+						// TODO: Need to remove the setTimeout in the future
+						setTimeout(function(){
+							if(ci.postFormat){
+								ci.postFormat(rowData[ci.name], t.model, t.$el);
+							}
+						}, 200);
 					}
+					
+//					if(ci.formatter){
+//						rowData[ci.name] = ci.formatter(rowData[ci.name], t.model, t.$el);
+//					}else{
+//						rowData[ci.name] = ci.formatter(rowData[ci.name]);
+//					}
 				}
 				
-				t.$el.html(t.contentTemplate(rowData));
+				//t.$el.html(t.contentTemplate(rowData));
 				
 				if(this.model.get("selected")){
 					t.$el.toggleClass("sq-row-selected", true);

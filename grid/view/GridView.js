@@ -58,7 +58,7 @@ define([
 			for(var i = 0; i < t.columnsStructure.length; i++){
 				var ci = t.columnsStructure[i];
 				t._columnsInfoMap[ci.name] = ci;
-				rowContentTplStr += '<td><%= data.';
+				rowContentTplStr += '<td data-sq-grid-col="' + ci.name + '"><%= data.';
 				rowContentTplStr += ci.name;
 				rowContentTplStr += ' %></td>';
 			}
