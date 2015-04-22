@@ -83,8 +83,9 @@ define([
 		render: function(){
 			var t = this;
 			t.$el.html(t.template(t.model.toJSON()));
+			var sortable = t.model.get("sortable");
 			// indirect sort can only be set before grid is created.
-			if(!t._indirectSortEnabled){
+			if(!t._indirectSortEnabled && sortable){
 				t.$el.css({"cursor": "pointer"});
 			}
 			
@@ -108,6 +109,11 @@ define([
 			var ct = e.currentTarget;
 			
 			var name = t.model.get("name");
+			var sortable = t.model.get("sortable");
+			if(!sortable){
+				return;
+			}
+			
 			var pn = $(ct).parent().parent();
 			
 			
