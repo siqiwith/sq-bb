@@ -113,7 +113,7 @@ define([
 					}
 				}
 				
-				if(t.currentPage != t.pageSize){
+				if(t.currentPage != t.pageCount){
 					t.$('.pagination').append('<li><a href="javascript:void(0)" aria-label="Next" data-sq-page-number="next">&gt;</a></li>');
 				}
 			}
@@ -124,9 +124,17 @@ define([
 			var ct = e.currentTarget;
 			var pageNumber = t.$(ct).attr("data-sq-page-number");
 			if(pageNumber == "previous"){
-				t.currentPage = t.currentPage * 1 - 1;
+				if(t.currentPage == 1){
+					return;
+				}else{
+					t.currentPage = t.currentPage * 1 - 1;
+				}
 			}else if(pageNumber == "next"){
-				t.currentPage = t.currentPage * 1 + 1;
+				if(t.currentPage == t.pageCount){
+					return;
+				}else{
+					t.currentPage = t.currentPage * 1 + 1;
+				}
 			}else{
 				t.currentPage = pageNumber;
 			}
