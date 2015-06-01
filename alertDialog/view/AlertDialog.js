@@ -41,7 +41,9 @@ define([
 			var t = this;
 			t.$el.html(this.template({}));
 			t.delegateEvents();
-			
+			t.$el.on('shown.bs.modal', function (e) {
+				t.$(".btn-default").focus();
+			});
 			return this;
 		},
 		
