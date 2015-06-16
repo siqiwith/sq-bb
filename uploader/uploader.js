@@ -5,6 +5,12 @@ var uploader = {
 	// Config chunkSize before use the uploader. Bytes
 	chunkSize: 1024 * 1024 * 1024 / 2, //Default 1GB / 2
 	
+	debug: false,
+	
+	formatFileName: function(fileName, chunkNum){
+		return fileName;
+	},
+	
 	_upload : function(options) {
 		/*
 		   options: uploadProgress, url, type, data, success, error
@@ -68,16 +74,23 @@ var uploader = {
 				end = file.size;
 			}
 			var chunkData = file.slice(start, end);
-			chunkData.name = "part_" + currentChunk + "_"
-					+ file.name;
-			uploadData.append(chunkData.name, chunkData);
-			uploadData.append("start", start);
+			if(options["formatFileName"]){
+				chunkData.name = options["formatFileName"](file.name, currentChunk);
+			}else{
+				chunkData.name = t.formatFileName(file.name, currentChunk);
+			}
+			uploadData.append(chunkData.name, chunkData, chunkData.name);
+			uploadData.append("offset", start);
+			uploadData.append("chunk", currentChunk);
+			if(end == file.size){
+				uploadData.append("eof", true);
+			}
 			return t._upload({
 				data : uploadData,
 				url : url,
 				uploadProgress : function(event, position, total,
 						percent) {
-					console.log("upload progress: " + percent
+					t.debug && console.log("upload progress: " + percent
 							+ " | for block: #" + currentChunk);
 					var totalPosition = currentChunk
 							* t.chunkSize
@@ -90,7 +103,7 @@ var uploader = {
 							totalPercent);
 				},
 				success : function(data) {
-					console.log("upload done for block: #"
+					t.debug && console.log("upload done for block: #"
 							+ currentChunk);
 					if (currentChunk + 1 == totalChunkNum) {
 						dfd.resolve({});
@@ -100,7 +113,7 @@ var uploader = {
 
 				},
 				error : function(jqXHR) {
-					console.log("upload error for block: #"
+					t.debug && console.log("upload error for block: #"
 							+ currentChunk);
 					// To add retry logic
 					// uploadChunk(currentChunk);
