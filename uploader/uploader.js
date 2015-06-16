@@ -79,7 +79,7 @@ var uploader = {
 			}else{
 				chunkData.name = t.formatFileName(file.name, currentChunk);
 			}
-			uploadData.append(chunkData.name, chunkData, chunkData.name);
+			uploadData.append(options.name, chunkData, chunkData.name);
 			uploadData.append("offset", start);
 			uploadData.append("chunk", currentChunk);
 			if(end == file.size){
