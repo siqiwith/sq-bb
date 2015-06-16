@@ -106,7 +106,7 @@ var uploader = {
 					t.debug && console.log("upload done for block: #"
 							+ currentChunk);
 					if (currentChunk + 1 == totalChunkNum) {
-						dfd.resolve({});
+						dfd.resolve(data);
 						return;
 					}
 					jqXHR = uploadChunk(currentChunk + 1);
