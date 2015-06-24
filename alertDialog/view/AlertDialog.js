@@ -80,6 +80,12 @@ define([
 				show: true,
 				backdrop: "static"
 			});
+			
+			var width = "";
+			if(content.width){
+				width = content.width;
+			}
+			$(".sq-alert-dialog .modal-dialog").css("width", width);
 		},
 		
 		hide: function(){
