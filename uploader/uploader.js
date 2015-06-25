@@ -117,7 +117,7 @@ var uploader = {
 							+ currentChunk);
 					// To add retry logic
 					// uploadChunk(currentChunk);
-					jqXHR = null;
+					// jqXHR = null;
 					dfd.reject(jqXHR)
 				}
 			});
