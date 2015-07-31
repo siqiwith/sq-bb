@@ -136,6 +136,14 @@ var sq = {
 		return result;
 	},
 	
+	ipNum: function(startIp, endIp){
+		var startIpCmps = startIp.split(".");
+		var endIpCmps = endIp.split(".");
+		var u1 = Math.pow(256, 3), u2 = Math.pow(256, 2), u3 = 256;
+		var ipNum = (endIpCmps[0] -startIpCmps[0]) * u1 + (endIpCmps[1] -startIpCmps[1]) * u2 + (endIpCmps[2] -startIpCmps[2]) * u3 + (endIpCmps[3] -startIpCmps[3]) + 1; 
+		return ipNum;
+	},
+	
 	isIpv4: function(ipv4){
 		var re = /^\d{1,3}\.\d{1,3}\.\d{1,3}.\d{1,3}$/g;
 		var isValid = re.test(ipv4);
