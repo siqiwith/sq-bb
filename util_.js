@@ -1,6 +1,6 @@
 define([], function() {
 
-var siqi = {
+var sq = {
 	valueTemplateSettings: {
 		variable: 'data',
 		evaluate: /<%([\s\S]+?)%>/g,
@@ -134,10 +134,57 @@ var siqi = {
 			result = daysStr.replace("<%= days %>", days);
 		}
 		return result;
+	},
+	
+	isIpv4: function(ipv4){
+		var re = /^\d{1,3}\.\d{1,3}\.\d{1,3}.\d{1,3}$/g;
+		var isValid = re.test(ipv4);
+		if(isValid){
+			var cmps = ipv4.split(".");
+			for(var i = 0; i < cmps.length; i++){
+				var cmp = cmps[i];
+				if( cmp* 1 != cmp){
+					isValid = false;
+					break;
+				}
+			}
+		}
+		return isValid;
+	},
+	
+	isInSameSubnet: function(ipv4Array, netmask){
+		var t = this, result = true, subnet = "";
+		var netMaskCmps = netmask.split(".");
+		result = result && t.isIpv4(netmask);
+		if(!result){
+			return result;
+		}
+		
+		for(var i = 0; i < ipv4Array.length; i++){
+			var ipv4 = ipv4Array[i];
+			result = result && t.isIpv4(ipv4);
+			if(!result){
+				break;
+			}
+			var ipCmps = ipv4.split(".");
+			var tmpSubnet = ""; 
+			for(var j = 0; j < ipCmps.length; j++){
+				tmpSubnet += ipCmps[j] * 1 & netMaskCmps[j] * 1;
+			}
+			if(subnet == ""){
+				subnet = tmpSubnet;
+			}else{
+				if(subnet != tmpSubnet){
+					result = false;
+					break;
+				}
+			}
+		}
+		return result;
 	}
 }
-window.siqi = siqi;
+window.sq = sq;
 	
-return siqi;
+return sq;
 
 })
