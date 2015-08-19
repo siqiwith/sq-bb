@@ -98,9 +98,6 @@ var uploader = {
 									/ 100);
 					var totalPercent = Math.ceil(totalPosition
 							* 100 / totalSize);
-					if(totalPosition > totalSize){
-						totalPosition = totalSize;
-					}
 
 					uploadProgress(event, totalPosition, totalSize,
 							totalPercent);

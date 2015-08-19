@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Grid</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/underscore/underscore-min.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="bower_components/backbone/backbone.js"></script>
+    <script src="bower_components/moment/moment-with-locales.min.js"></script>
+    
+    <script src="bower_components/requirejs/require.js"></script>
+    
+	<link href="css/font-awesome-4.2.0/css/font-awesome.css" media="all" rel="stylesheet" type="text/css">
+    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" media="all" rel="stylesheet" type="text/css">
+	<link href="../base.css" media="all" rel="stylesheet" type="text/css">
+	<link href="css/base.css" media="all" rel="stylesheet" type="text/css">
+	
+    <script src="js/config.js"></script>
+	<script type="text/javascript">
+	    var g_data = null;
+	    var g_config = {
+	    	currentPage: 1,
+	    	pageSize: 10,
+	    	pageCount: 1,
+	    	pageButtonCount: 5
+	    };
+		$(function(){
+		require([
+		"sq_",
+		"sqGrid/view/GridView",
+		"sqPaginator/view/PaginatorView",
+		"sqMask/view/MaskView"
+		], function(sq_, GridView, PaginatorView, MaskView){
+			var columns = [{
+				name: "Genre",
+				label: "Genre",
+				forceRender: true,
+				sortable: true,
+				formatter: null,
+				rawSort: true,
+				comparator: null
+			}, {
+				name: "Name",
+				label: "Name",
+				sortable: true,
+				formatter: null,
+			}, {
+				name: "Track",
+				label: "Track",
+				sortable: true,
+				formatter: null,
+			}, {
+				name: "Composer",
+				label: "Composer",
+				sortable: true,
+				formatter: null,
+			}, {
+                name: "Download Date",
+                label: "Download Date",
+                sortable: true,
+                formatter: null,
+            }, {
+                name: "Last Played",
+                label: "Last Played",
+                sortable: true,
+                formatter: null
+            }, {
+                name: "Heard",
+                label: "Heard",
+                sortable: true,
+                formatter: function(rawValue, model){
+                	if(rawValue){
+                		return '<i class="fa fa-check-circle"></i>';
+                	}else{
+                		return '<i class="fa fa-times-circle"></i>';
+                	}
+                }
+            }, {
+                name: "Progress",
+                label: "Progress",
+                sortable: true,
+                formatter: function(rawValue, model){
+                	rawValue = rawValue ? rawValue : 0;
+                	var previousProgress = Math.floor(rawValue * 100);
+                	var result = '<div class="progress">'
+                        + '<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="' + previousProgress + '" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: ' + previousProgress + '%;">'
+                        +  previousProgress + '%'
+                        + '</div>'
+                      + '</div>';
+                	
+                	return result;
+                }
+            }];
+			
+			
+			var DataCollection = Backbone.Collection.extend({
+				model: Backbone.Model.extend({
+					//idAttribute: "Name"
+				})
+			});
+			
+			var dataCollection = new DataCollection([]);
+			
+			var gridView = new GridView({
+				columnsStructure: columns,
+				collection: dataCollection,
+				serverSideSort: true,
+				indirectSort: {
+					enabled: false
+				},
+				canClearState: false,
+				multiSelect: false
+			});
+			
+			$(".grid-container").append(gridView.render().$el);
+			
+			var paginatorView = new PaginatorView({
+                pageCount: 1,
+                currentPage: 1,
+                pageSize: 10,
+                pageButtonCount: 5,
+                nls: {
+                    "TOTAL": "Total",
+                    "GO": "Go"
+                }
+            });
+			
+			$(".pagination-container").append(paginatorView.render().$el);
+            
+			paginatorView.on("onGoToPage", function(param){
+                var page = param.pageNumber;
+                g_config.currentPage = page;
+                update();
+                //dataCollection.reset(listData, {sort: false});
+            });
+			
+			gridView.on("onServerSideSort", function(param){
+                console.log(param);
+                if(param.sortType == "clear"){
+                	g_config.sort_by = null;
+                	g_config.ascending = null;
+                }else{
+                    g_config.sort_by = param.sortBy;
+                    g_config.ascending = (param.sortType == "ascending");
+                }
+                g_config.currentPage = 1;
+                update();
+            });
+			
+	         $.ajax("data/grid_data.json", {
+                 type: "GET",
+                 dataType: "json"
+             }).done(function(data){
+            	 g_data = data;
+                 //dataCollection.reset(data);
+            	 update();
+             });
+			
+			function update(){
+				var df = $.Deferred();
+				df.done(function(data){
+					dataCollection.reset(data);
+					paginatorView.currentPage = g_config.currentPage;
+					paginatorView.pageCount = g_config.pageCount;
+					paginatorView.pageButtonCount = g_config.pageButtonCount;
+                    paginatorView.update();
+				});
+				var newData = [], i = (g_config.currentPage - 1) * g_config.pageSize;
+				
+				// Do sort
+				sortedData = g_data.slice(0);
+				if(g_config.sort_by != null){ g_config.sort_by 
+					var comparator = null;
+					if(g_config.ascending){
+						comparator = function(a, b){
+			                var valA = a[g_config.sort_by];
+			                var valB = b[g_config.sort_by];
+			                if(valA == valB){
+			                    return 0;
+			                }else if(valA > valB){
+			                    return 1;
+			                }else{
+			                    return -1;
+			                }
+			            };
+			            
+
+					}else{
+                        comparator = function(a, b){
+                            var valA = a[g_config.sort_by];
+                            var valB = b[g_config.sort_by];
+                            if(valA == valB){
+                                return 0;
+                            }else if(valA < valB){
+                                return 1;
+                            }else{
+                                return -1;
+                            }
+                        };
+					}
+					sortedData.sort(comparator);
+				}
+				// Do pagination
+				for(;i < g_config.currentPage * g_config.pageSize && i < sortedData.length; i++){
+					newData.push(sortedData[i]);
+				}
+				g_config.pageCount = Math.floor(g_data.length / g_config.pageSize);
+				if(g_config.pageCount == 0){g_config.pageCount = 1;}
+				df.resolve(newData);
+			}
+			
+			$("#pageSize").on("change", function(e){
+				var v = $("#pageSize").val();
+		        g_config.pageSize = v;
+		        g_config.currentPage = 1;
+		        update();
+			});
+			
+			$("#pageButtonCount").on("change", function(e){
+                var v = $("#pageButtonCount").val();
+                g_config.pageButtonCount = v;
+                g_config.currentPage = 1;
+                update();
+            });
+			
+	         $("#otherConfigs input").on("change", function(e){
+                rebuildGrid();
+             });
+	         
+	         function rebuildGrid(){
+	        	 if(gridView){
+	        		 gridView.remove();
+	        	 }
+	        	 var sortable = $("#sortable")[0].checked;
+	        	 var formatter = $("#formatter")[0].checked;
+	        	 var indirectSort = $("#indirectSort")[0].checked;
+	        	 var multiSelect = $("#multiSelect")[0].checked;
+	        	 
+	        	 var newColumns = [];
+	        	 for(var i = 0; i < columns.length; i++){
+	        		 newColumns.push(_.clone(columns[i]));
+	        		 newColumns[i].sortable = sortable;
+	        		 if(!formatter){
+	        			 newColumns[i].formatter = null;
+	        		 }
+	        		 
+	        	 }
+	        	 
+	             gridView = new GridView({
+	                 columnsStructure: newColumns,
+	                 collection: dataCollection,
+	                 serverSideSort: true,
+	                 indirectSort: {
+	                     enabled: indirectSort
+	                 },
+	                 canClearState: false,
+	                 multiSelect: multiSelect
+	             });
+	             
+	             $(".grid-container").append(gridView.render().$el);
+	            
+	             gridView.on("onServerSideSort", function(param){
+	                 console.log(param);
+	                 if(param.sortType == "clear"){
+	                     g_config.sort_by = null;
+	                     g_config.ascending = null;
+	                 }else{
+	                     g_config.sort_by = param.sortBy;
+	                     g_config.ascending = (param.sortType == "ascending");
+	                 }
+	                 g_config.currentPage = 1;
+	                 update();
+	             });
+	             update();
+	         }
+
+		});
+		});
+	</script>
+</head>
+<body>
+	<nav class="navbar navbar-default navbar-fixed-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed"
+					data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+					aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#">sq-bb sqGrid Test</a>
+			</div>
+			<!-- 
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="#">Dashboard</a></li>
+					<li><a href="#">Settings</a></li>
+					<li><a href="#">Profile</a></li>
+					<li><a href="#">Help</a></li>
+				</ul>
+				<form class="navbar-form navbar-right">
+					<input type="text" class="form-control" placeholder="Search...">
+				</form>
+			</div>
+			 -->
+		</div>
+	</nav>
+	
+	<div class="container-fluid" style="">
+	   <div class="col-sm-3 col-md-2 sidebar">
+			<div class="form-group">
+				<label for="pageSize">Page Size</label> <select class="form-control"
+					id="pageSize">
+					<option>1</option>
+					<option selected>5</option>
+					<option>10</option>
+					<option>15</option>
+					<option>20</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<label for="pageButtonCount">Page Button Count</label> <select class="form-control"
+                    id="pageButtonCount">
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option selected>5</option>
+                </select>
+            </div>
+            <div class="form-group" id="otherConfigs">
+                <div class="checkbox">
+				    <label>
+				      <input type="checkbox" id="sortable" checked>
+				      Sortable
+				    </label>
+				</div>
+                <div class="checkbox">
+                    <label>
+                      <input type="checkbox" id="formatter" checked>
+                      Formatter
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                      <input type="checkbox" id="indirectSort">
+                      Indirect Sorting
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                      <input type="checkbox" id="multiSelect">
+                      Multi Select
+                    </label>
+                </div>
+            </div>
+			</div>
+		</div>
+	   <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+	       <div class="grid-container"></div>
+	       <div class="pagination-container"></div>
+	   </div>
+	</div>
+</body>
+</html>

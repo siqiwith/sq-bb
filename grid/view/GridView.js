@@ -58,9 +58,9 @@ define([
 			for(var i = 0; i < t.columnsStructure.length; i++){
 				var ci = t.columnsStructure[i];
 				t._columnsInfoMap[ci.name] = ci;
-				rowContentTplStr += '<td data-sq-grid-col="' + ci.name + '"><%= data.';
+				rowContentTplStr += '<td data-sq-grid-col="' + ci.name + '"><%= data["';
 				rowContentTplStr += ci.name;
-				rowContentTplStr += ' %></td>';
+				rowContentTplStr += '"] %></td>';
 			}
 			
 			t.rowContentTemplate = sq_.template(rowContentTplStr, {
@@ -70,6 +70,7 @@ define([
 		},
 		
 		remove: function(){
+			var t = this;
 			var rowViews = this.rowViews;
 			if(rowViews){
 				for(var i = 0; i < rowViews.length; i++){
@@ -141,6 +142,27 @@ define([
 					});
 					
 					t._selectedRows = [];
+				});
+				
+				t.listenTo(t.collection, "reset", function(collection, options){
+					console.log();
+					while(t.rowViews.length > 0){
+						var rv = t.rowViews.pop();
+						rv.remove();
+					}
+					
+					t.collection.each(function(model){
+						var gridRowView = new GridRowView({
+							model: model,
+							gridView: t,
+							contentTemplate: t.rowContentTemplate
+						});
+						t.rowViews.push(gridRowView);
+						t.$("tbody").append(gridRowView.render(t.columnsStructure).$el);
+					});
+					
+					t._selectedRows = [];
+					t.trigger("onRedraw");
 				});
 			}
 			
